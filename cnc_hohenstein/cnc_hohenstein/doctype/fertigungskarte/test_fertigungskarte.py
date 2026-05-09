@@ -13,9 +13,9 @@ IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
 
-class IntegrationTestFertigungkarte(IntegrationTestCase):
+class IntegrationTestFertigungskarte(IntegrationTestCase):
 	"""
-	Integration tests for Fertigungkarte.
+	Integration tests for Fertigungskarte.
 	Use this class for testing interactions between multiple components.
 	"""
 

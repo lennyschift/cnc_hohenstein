@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class Fertigungkarte(Document):
+class Fertigungskarte(Document):
 	pass
