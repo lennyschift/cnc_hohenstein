@@ -12,8 +12,19 @@
  "is_hidden": 0,
  "label": "CNC Hohenstein",
  "link_type": "DocType",
- "links": [],
- "modified": "2026-05-09 17:59:52.892906",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fertigungskarte",
+   "link_count": 0,
+   "link_to": "Fertigungskarte",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-05-09 18:13:23.779844",
  "modified_by": "Administrator",
  "module": "CNC Hohenstein",
  "name": "CNC Hohenstein",

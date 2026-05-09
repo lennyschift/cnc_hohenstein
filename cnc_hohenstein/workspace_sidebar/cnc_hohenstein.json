@@ -11,7 +11,7 @@
    "icon": "home",
    "indent": 0,
    "keep_closed": 0,
-   "label": "Home",
+   "label": "Starte",
    "link_to": "CNC Hohenstein",
    "link_type": "Workspace",
    "show_arrow": 0,
@@ -30,7 +30,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-05-09 18:04:49.354609",
+ "modified": "2026-05-09 18:17:33.614712",
  "modified_by": "Administrator",
  "module": "CNC Hohenstein",
  "name": "CNC Hohenstein",
