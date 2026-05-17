@@ -104,7 +104,12 @@
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 0,
- "links": [],
+"links": [
+  {
+   "link_doctype": "Sales Order",
+   "link_fieldname": "sales_order"
+  }
+],
  "modified_by": "Administrator",
  "module": "CNC Hohenstein",
  "name": "Fertigungskarte", 

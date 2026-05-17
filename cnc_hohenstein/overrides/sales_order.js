@@ -1,6 +1,7 @@
 frappe.ui.form.on('Sales Order', {
     refresh(frm) {
         if (frm.doc.docstatus !== 1) return;
+        if (frm.doc.status !== "To Deliver and Bill") return;
 
         frm.add_custom_button(__('Fertigungskarten erstellen'), function () {
             open_fertigungskarten_dialog(frm);
@@ -9,15 +10,39 @@ frappe.ui.form.on('Sales Order', {
 });
 
 function open_fertigungskarten_dialog(frm) {
-    const produkte = (frm.doc.items || []).filter(row => {
-        return row.item_group === "Produkte";
+    frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Fertigungskarte",
+            filters: {
+                sales_order: frm.doc.name
+            },
+            fields: ["sales_order_item"],
+            limit_page_length: 999
+        },
+        freeze: true,
+        freeze_message: __('Prüfe vorhandene Fertigungskarten...'),
+        callback(r) {
+            const vorhandene_auftragspositionen = (r.message || [])
+                .map(row => row.sales_order_item)
+                .filter(Boolean);
+
+            const produkte = (frm.doc.items || []).filter(row => {
+                return row.item_group === "Produkte"
+                    && !vorhandene_auftragspositionen.includes(row.name);
+            });
+
+            if (!produkte.length) {
+                frappe.msgprint(__('Für diesen Auftrag gibt es keine Produkt-Positionen mehr ohne Fertigungskarte.'));
+                return;
+            }
+
+            open_fertigungskarten_dialog_mit_positionen(frm, produkte);
+        }
     });
+}
 
-    if (!produkte.length) {
-        frappe.msgprint(__('Keine Artikel mit Artikelgruppe "Produkte" im Auftrag gefunden.'));
-        return;
-    }
-
+function open_fertigungskarten_dialog_mit_positionen(frm, produkte) {
     let d = new frappe.ui.Dialog({
         title: __('Fertigungskarten erstellen'),
         fields: [
@@ -28,7 +53,6 @@ function open_fertigungskarten_dialog(frm) {
                 cannot_add_rows: true,
                 cannot_delete_rows: true,
                 in_place_edit: true,
-
                 data: produkte.map(row => ({
                     erstellen: 1,
                     sales_order_item: row.name,
@@ -37,7 +61,6 @@ function open_fertigungskarten_dialog(frm) {
                     qty: row.qty,
                     produzierende_menge: row.qty
                 })),
-
                 fields: [
                     {
                         fieldname: 'erstellen',
@@ -99,17 +122,36 @@ function open_fertigungskarten_dialog(frm) {
                 }
             }
 
-            console.log('Ausgewählte Fertigungskarten:', selected);
+            frappe.call({
+                method: "cnc_hohenstein.api.fertigungskarte.create_from_sales_order",
+                args: {
+                    sales_order: frm.doc.name,
+                    items: selected
+                },
+                freeze: true,
+                freeze_message: __('Erstelle Fertigungskarten...'),
+                callback(r) {
+                    if (!r.message) return;
 
-            frappe.msgprint(__('Auswahl funktioniert. Als nächstes wird die Server-Methode zum Erstellen der Fertigungskarten aufgerufen.'));
+                    let links = r.message.map(row => {
+                        return `<a href="/app/fertigungskarte/${row.name}">${row.name}</a> - ${row.artikel} - Menge ${row.menge}`;
+                    }).join('<br>');
 
-            d.hide();
+                    frappe.msgprint({
+                        title: __('Fertigungskarten erstellt'),
+                        indicator: 'green',
+                        message: links
+                    });
+
+                    d.hide();
+                    frm.reload_doc();
+                }
+            });
         }
     });
 
     d.show();
 
-    // Standard-Auswahlspalte der Frappe-Tabelle ausblenden
     setTimeout(() => {
         d.$wrapper.find('.grid-row-check').hide();
         d.$wrapper.find('.grid-heading-row .grid-row-check').hide();
