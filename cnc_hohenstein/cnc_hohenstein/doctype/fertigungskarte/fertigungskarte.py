@@ -8,21 +8,22 @@ class Fertigungskarte(Document):
     pass
 
 
-def get_finished_goods_warehouse():
-    possible_warehouses = [
-        "Finished Goods - HOH",
-        "Fertigerzeugnisse - HOH",
-        "Fertigwaren - HOH"
-    ]
-
-    for warehouse in possible_warehouses:
-        if frappe.db.exists("Warehouse", warehouse):
-            return warehouse
-
-    frappe.throw(
-        _("Kein Fertigwarenlager gefunden. Geprüft wurden: {0}")
-        .format(", ".join(possible_warehouses))
+def get_item_default_warehouse(item_code):
+    warehouse = frappe.db.get_value(
+        "Item Default",
+        {
+            "parent": item_code
+        },
+        "default_warehouse"
     )
+
+    if not warehouse:
+        frappe.throw(
+            _("Für Artikel {0} ist kein Standardlager in den Artikelvorgaben hinterlegt.")
+            .format(item_code)
+        )
+
+    return warehouse
 
 
 @frappe.whitelist()
@@ -43,6 +44,8 @@ def report_produced_qty(fertigungskarte, menge):
     if not fk.artikel:
         frappe.throw(_("Kein Artikel in der Fertigungskarte hinterlegt."))
 
+    sales_order = frappe.get_doc("Sales Order", fk.sales_order)
+
     bereits_produziert = flt(fk.menge_produziert)
     rueckmeldemenge = menge - bereits_produziert
 
@@ -52,17 +55,19 @@ def report_produced_qty(fertigungskarte, menge):
     if menge > flt(fk.menge):
         frappe.throw(_("Die produzierte Gesamtmenge darf nicht größer als die Sollmenge sein."))
 
-    fertigwarenlager = get_finished_goods_warehouse()
+    ziel_lager = get_item_default_warehouse(fk.artikel)
 
     stock_entry = frappe.new_doc("Stock Entry")
     stock_entry.stock_entry_type = "Material Receipt"
-    stock_entry.company = "Hohenstein GmbH"
-    stock_entry.custom_fertigungskarte = fk.name if frappe.get_meta("Stock Entry").has_field("custom_fertigungskarte") else None
+    stock_entry.company = sales_order.company
+
+    if frappe.get_meta("Stock Entry").has_field("custom_fertigungskarte"):
+        stock_entry.custom_fertigungskarte = fk.name
 
     stock_entry.append("items", {
         "item_code": fk.artikel,
         "qty": rueckmeldemenge,
-        "t_warehouse": fertigwarenlager,
+        "t_warehouse": ziel_lager,
         "allow_zero_valuation_rate": 1
     })
 
@@ -108,5 +113,5 @@ def report_produced_qty(fertigungskarte, menge):
         "rueckmeldemenge": rueckmeldemenge,
         "produced_qty": flt(gesamte_produzierte_menge),
         "stock_entry": stock_entry.name,
-        "warehouse": fertigwarenlager
+        "warehouse": ziel_lager
     }

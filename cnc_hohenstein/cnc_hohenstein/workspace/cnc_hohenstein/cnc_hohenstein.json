@@ -1,40 +1,75 @@
 {
  "app": "cnc_hohenstein",
  "charts": [],
- "content": "[]",
+ "content": "[{\"id\":\"SQ-SgLhBgN\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the CNC Hohenstein workspace</span>\",\"col\":12}},{\"id\":\"P_fN4OIAgp\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Fertigungskarte\",\"col\":4}},{\"id\":\"ejex8vwFB8\",\"type\":\"paragraph\",\"data\":{\"text\":\"Click on \\n\\t\\t\\t\\n\\t\\t\\t\\n\\t\\t to edit\",\"col\":12}},{\"id\":\"WZqZ853nJ1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fertigungskarte\",\"col\":3}},{\"id\":\"7-QXEOnj0d\",\"type\":\"card\",\"data\":{\"card_name\":\"Test\",\"col\":4}}]",
  "creation": "2026-05-09 17:59:28.834456",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
  "hide_custom": 0,
- "idx": 0,
+ "icon": "",
+ "idx": 2,
  "indicator_color": "green",
  "is_hidden": 0,
  "label": "CNC Hohenstein",
- "link_type": "DocType",
+ "link_type": "Page",
  "links": [
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Fertigungskarte",
+   "label": "Test",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
    "link_count": 0,
-   "link_to": "Fertigungskarte",
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2026-05-09 18:13:23.779844",
- "modified_by": "Administrator",
+ "modified": "2026-06-05 01:29:12.284051",
+ "modified_by": "lennyschift@gmail.com",
  "module": "CNC Hohenstein",
  "name": "CNC Hohenstein",
  "number_cards": [],
  "owner": "Administrator",
  "public": 1,
- "quick_lists": [],
+ "quick_lists": [
+  {
+   "document_type": "Fertigungskarte",
+   "label": "Fertigungskarte",
+   "quick_list_filter": "[]"
+  }
+ ],
  "roles": [],
  "sequence_id": 0.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "Kanban",
+   "label": "Fertigungskarte",
+   "link_to": "Fertigungskarte",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
  "title": "CNC Hohenstein",
  "type": "Workspace"
 }

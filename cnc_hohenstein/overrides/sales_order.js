@@ -123,7 +123,7 @@ function open_fertigungskarten_dialog_mit_positionen(frm, produkte) {
             }
 
             frappe.call({
-                method: "cnc_hohenstein.api.fertigungskarte.create_from_sales_order",
+                method: "cnc_hohenstein.services.fertigungskarte.create_from_sales_order",
                 args: {
                     sales_order: frm.doc.name,
                     items: selected
