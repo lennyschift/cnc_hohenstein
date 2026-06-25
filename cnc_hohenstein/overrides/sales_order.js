@@ -28,7 +28,7 @@ function open_fertigungskarten_dialog(frm) {
                 .filter(Boolean);
 
             const produkte = (frm.doc.items || []).filter(row => {
-                return row.item_group === "Produkte"
+                return row.item_group === "Products"
                     && !vorhandene_auftragspositionen.includes(row.name);
             });
 
