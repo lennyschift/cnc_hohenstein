@@ -38,7 +38,7 @@ def create_from_sales_order(sales_order, items):
         if not so_item:
             frappe.throw(_("Auftragsposition wurde im Auftrag nicht gefunden."))
 
-        if so_item.item_group != "Produkte":
+        if so_item.item_group != "Products":
             frappe.throw(_("Nur Artikel aus der Artikelgruppe Produkte dürfen verwendet werden."))
 
         fk = frappe.new_doc("Fertigungskarte")
