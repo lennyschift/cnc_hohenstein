@@ -75,8 +75,13 @@ def report_produced_qty(fertigungskarte, menge):
     stock_entry.submit()
 
     fk.db_set("menge_produziert", menge)
-    fk.db_set("stock_entry", stock_entry.name)
-    fk.db_set("gebucht", 1)
+
+    fk.append("buchungen", {
+        "stock_entry": stock_entry.name,
+        "menge": rueckmeldemenge,
+        "gebucht_am": frappe.utils.now_datetime()
+    })
+    fk.save(ignore_permissions=True)
 
     gesamte_produzierte_menge = frappe.db.sql(
         """

@@ -27,10 +27,23 @@ function open_fertigungskarten_dialog(frm) {
                 .map(row => row.sales_order_item)
                 .filter(Boolean);
 
-            const produkte = (frm.doc.items || []).filter(row => {
-                return row.item_group === "Products"
-                    && !vorhandene_auftragspositionen.includes(row.name);
-            });
+            const produkt_positionen = (frm.doc.items || []).filter(row => row.item_group === "Products");
+
+            if (!produkt_positionen.length) {
+                const vorhandene_gruppen = [...new Set(
+                    (frm.doc.items || []).map(row => row.item_group).filter(Boolean)
+                )];
+
+                frappe.msgprint({
+                    title: __('Keine Produkt-Positionen gefunden'),
+                    indicator: 'orange',
+                    message: __('Für diesen Auftrag gibt es keine Positionen mit Artikelgruppe "Products". Vorhandene Artikelgruppen: {0}',
+                        [vorhandene_gruppen.length ? vorhandene_gruppen.join(', ') : '–'])
+                });
+                return;
+            }
+
+            const produkte = produkt_positionen.filter(row => !vorhandene_auftragspositionen.includes(row.name));
 
             if (!produkte.length) {
                 frappe.msgprint(__('Für diesen Auftrag gibt es keine Produkt-Positionen mehr ohne Fertigungskarte.'));
