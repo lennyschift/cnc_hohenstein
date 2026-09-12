@@ -21,13 +21,9 @@ def create_from_sales_order(sales_order, items):
             continue
 
         sales_order_item = row.get("sales_order_item")
-        produzierende_menge = frappe.utils.flt(row.get("produzierende_menge"))
 
         if not sales_order_item:
             frappe.throw(_("Auftragsposition fehlt."))
-
-        if produzierende_menge <= 0:
-            frappe.throw(_("Produzierende Menge muss größer als 0 sein."))
 
         so_item = None
         for item in so.items:
@@ -45,14 +41,15 @@ def create_from_sales_order(sales_order, items):
         fk.sales_order = so.name
         fk.sales_order_item = so_item.name
         fk.status = "Offen"
-        fk.prioritaet = "Normal"
 
         fk.artikel = so_item.item_code
         fk.kunde = so.customer
 
-        fk.menge = produzierende_menge
+        fk.menge = so_item.qty
         fk.menge_produziert = 0
-        fk.menge_geliefert = 0
+
+        fk.serial_von = so_item.get("custom_start_serialnummer")
+        fk.serial_bis = so_item.get("custom_ende_serialnummer")
 
         fk.liefertermin = so_item.delivery_date or so.delivery_date
 

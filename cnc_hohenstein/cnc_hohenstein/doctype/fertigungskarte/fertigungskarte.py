@@ -52,8 +52,7 @@ def report_produced_qty(fertigungskarte, menge):
     if rueckmeldemenge <= 0:
         frappe.throw(_("Die Rückmeldemenge muss größer als 0 sein."))
 
-    if menge > flt(fk.menge):
-        frappe.throw(_("Die produzierte Gesamtmenge darf nicht größer als die Sollmenge sein."))
+    ueberproduktion = max(menge - flt(fk.menge), 0)
 
     ziel_lager = get_item_default_warehouse(fk.artikel)
 
@@ -118,5 +117,6 @@ def report_produced_qty(fertigungskarte, menge):
         "rueckmeldemenge": rueckmeldemenge,
         "produced_qty": flt(gesamte_produzierte_menge),
         "stock_entry": stock_entry.name,
-        "warehouse": ziel_lager
+        "warehouse": ziel_lager,
+        "ueberproduktion": ueberproduktion
     }

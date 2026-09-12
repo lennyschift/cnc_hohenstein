@@ -1,5 +1,15 @@
+const FERTIGUNGSKARTE_STATUS_COLORS = {
+    "Offen": "red",
+    "In Produktion": "orange",
+    "Fertig": "green"
+};
+
 frappe.ui.form.on('Fertigungskarte', {
     refresh(frm) {
+        if (frm.doc.status) {
+            frm.page.set_indicator(__(frm.doc.status), FERTIGUNGSKARTE_STATUS_COLORS[frm.doc.status] || "gray");
+        }
+
         if (frm.is_new()) return;
 
         frm.add_custom_button(__('Menge zurückmelden'), function () {
@@ -63,11 +73,6 @@ function open_menge_zurueckmelden_dialog(frm) {
                 return;
             }
 
-            if (rueckmeldemenge > noch_offen) {
-                frappe.msgprint(__('Die Rückmeldemenge ist größer als die offene Menge.'));
-                return;
-            }
-
             const neue_gesamtmenge = bereits_produziert + rueckmeldemenge;
 
             frappe.call({
@@ -89,6 +94,16 @@ function open_menge_zurueckmelden_dialog(frm) {
                         message: __('Menge erfolgreich zurückgemeldet'),
                         indicator: 'green'
                     });
+
+                    const ueberproduktion = flt(r.message.ueberproduktion || 0);
+
+                    if (ueberproduktion > 0) {
+                        frappe.msgprint({
+                            title: __('Überproduktion'),
+                            indicator: 'orange',
+                            message: __('Es wurden {0} Stück über die Sollmenge hinaus produziert und eingelagert.', [ueberproduktion])
+                        });
+                    }
 
                     d.hide();
                     frm.reload_doc();

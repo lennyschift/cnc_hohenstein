@@ -71,8 +71,7 @@ function open_fertigungskarten_dialog_mit_positionen(frm, produkte) {
                     sales_order_item: row.name,
                     item_code: row.item_code,
                     item_name: row.item_name,
-                    qty: row.qty,
-                    produzierende_menge: row.qty
+                    qty: row.qty
                 })),
                 fields: [
                     {
@@ -105,14 +104,6 @@ function open_fertigungskarten_dialog_mit_positionen(frm, produkte) {
                         read_only: 1,
                         in_list_view: 1,
                         columns: 2
-                    },
-                    {
-                        fieldname: 'produzierende_menge',
-                        fieldtype: 'Float',
-                        label: __('Produzierende Menge'),
-                        reqd: 1,
-                        in_list_view: 1,
-                        columns: 2
                     }
                 ]
             }
@@ -126,13 +117,6 @@ function open_fertigungskarten_dialog_mit_positionen(frm, produkte) {
             if (!selected.length) {
                 frappe.msgprint(__('Bitte mindestens eine Position auswählen.'));
                 return;
-            }
-
-            for (const row of selected) {
-                if (!row.produzierende_menge || row.produzierende_menge <= 0) {
-                    frappe.msgprint(__('Die produzierende Menge muss größer als 0 sein.'));
-                    return;
-                }
             }
 
             frappe.call({
