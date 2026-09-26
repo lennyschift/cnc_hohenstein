@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+}
+
+/* Hellere Beschriftungen (umschaltbar über die Einstellungsleiste) */
+.bright-labels label,
+.bright-labels h2,
+.bright-labels h3 {
+  color: #e8edf4 !important;
+}
+

@@ -1,0 +1,25 @@
+[
+  {
+    "name": "Bosch Rexroth GmbH",
+    "adresse": "Bosch Rexroth GmbH\nEinkauf\nZum Eisengießer 1\n97816 Lohr am Main",
+    "email": "einkauf@boschrexroth.de",
+    "lieferanten_nr": "063018/00",
+    "ansprechpartner": [
+      { "name": "Frau Müller", "email": "mueller@boschrexroth.de", "telefon": "" }
+    ]
+  },
+  {
+    "name": "Weinmann Aach AG",
+    "adresse": "Weinmann Aach AG\nEinkauf\nForchenstraße 50\n72820 Sonnenbühl",
+    "email": "einkauf@weinmann-aach.de",
+    "lieferanten_nr": "",
+    "ansprechpartner": []
+  },
+  {
+    "name": "Musterkunde GmbH",
+    "adresse": "Musterkunde GmbH\nMusterweg 5\n70000 Stuttgart",
+    "email": "info@musterkunde.de",
+    "lieferanten_nr": "",
+    "ansprechpartner": []
+  }
+]

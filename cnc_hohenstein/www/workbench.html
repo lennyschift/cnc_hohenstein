@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Angebots-Workbench</title>
+	{{ workbench_head | safe }}
+</head>
+<body class="bg-slate-950 text-slate-100">
+	<script type="text/javascript">
+		if (!window.frappe) { window.frappe = {}; }
+		frappe.csrf_token = "{{ csrf_token }}";
+	</script>
+	<div id="app"></div>
+	{{ workbench_body | safe }}
+</body>
+</html>
