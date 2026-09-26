@@ -6,7 +6,7 @@
    "label": "Fertigungskarten Status 30 Tage"
   }
  ],
- "content": "[{\"id\":\"hdr-main\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">CNC Hohenstein \u2013 Fertigung &amp; Vertrieb</span>\",\"col\":12}},{\"id\":\"2tOTbOHc-_\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Fertigungskarten Status 30 Tage\",\"col\":12}},{\"id\":\"nc-offen\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Fertigungskarten Offen\",\"col\":4}},{\"id\":\"nc-inprod\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Fertigungskarten In Produktion\",\"col\":4}},{\"id\":\"nc-fertig\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Fertigungskarten Fertig\",\"col\":4}},{\"id\":\"hdr-schnellzugriff\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Schnellzugriff</span>\",\"col\":12}},{\"id\":\"sc-angebot\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Angebot\",\"col\":3}},{\"id\":\"sc-auftrag\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Auftrag\",\"col\":3}},{\"id\":\"sc-fertigungskarte\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fertigungskarte\",\"col\":3}},{\"id\":\"sc-artikel\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Artikel\",\"col\":3}},{\"id\":\"sc-kunde\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Kunde\",\"col\":3}},{\"id\":\"ql-fk\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Fertigungskarte\",\"col\":6}},{\"id\":\"ql-so\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Offene Auftr\u00e4ge\",\"col\":6}},{\"id\":\"card-verkauf\",\"type\":\"card\",\"data\":{\"card_name\":\"Verkauf\",\"col\":6}},{\"id\":\"card-lager\",\"type\":\"card\",\"data\":{\"card_name\":\"Lager & Artikel\",\"col\":6}}]",
+ "content": "[{\"id\":\"hdr-main\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">CNC Hohenstein \\u2013 Fertigung &amp; Vertrieb</span>\",\"col\":12}},{\"id\":\"2tOTbOHc-_\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Fertigungskarten Status 30 Tage\",\"col\":12}},{\"id\":\"nc-offen\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Fertigungskarten Offen\",\"col\":4}},{\"id\":\"nc-inprod\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Fertigungskarten In Produktion\",\"col\":4}},{\"id\":\"nc-fertig\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Fertigungskarten Fertig\",\"col\":4}},{\"id\":\"hdr-schnellzugriff\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Schnellzugriff</span>\",\"col\":12}},{\"id\":\"sc-angebot\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Angebot\",\"col\":3}},{\"id\":\"sc-auftrag\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Auftrag\",\"col\":3}},{\"id\":\"sc-fertigungskarte\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Fertigungskarte\",\"col\":3}},{\"id\":\"sc-artikel\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Artikel\",\"col\":3}},{\"id\":\"sc-kunde\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Kunde\",\"col\":3}},{\"id\":\"sc-workbench\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Angebots-Workbench\",\"col\":3}},{\"id\":\"ql-fk\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Fertigungskarte\",\"col\":6}},{\"id\":\"ql-so\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Offene Auftr\\u00e4ge\",\"col\":6}},{\"id\":\"card-verkauf\",\"type\":\"card\",\"data\":{\"card_name\":\"Verkauf\",\"col\":6}},{\"id\":\"card-lager\",\"type\":\"card\",\"data\":{\"card_name\":\"Lager & Artikel\",\"col\":6}}]",
  "creation": "2026-09-12 13:17:57.443089",
  "custom_blocks": [],
  "docstatus": 0,
@@ -98,7 +98,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-09-12 13:53:36.650480",
+ "modified": "2026-09-26 18:00:00.000000",
  "modified_by": "lennyschift@gmail.com",
  "module": "CNC Hohenstein",
  "name": "CNC Hohenstein",
@@ -126,7 +126,7 @@
   },
   {
    "document_type": "Sales Order",
-   "label": "Offene Auftr\u00e4ge",
+   "label": "Offene Aufträge",
    "quick_list_filter": "[[\"Sales Order\",\"status\",\"=\",\"To Deliver and Bill\"]]"
   }
  ],
@@ -172,6 +172,13 @@
    "link_to": "Customer",
    "stats_filter": "[]",
    "type": "DocType"
+  },
+  {
+   "color": "Purple",
+   "label": "Angebots-Workbench",
+   "type": "URL",
+   "url": "/workbench",
+   "stats_filter": "[]"
   }
  ],
  "title": "CNC Hohenstein",
