@@ -1,5 +1,15 @@
 import frappe
 
+# Gleiche Zuordnung wie im Angebot-Druckformat (Salutation ist in ERPNext
+# nicht uebersetzt, kommt immer als "Mr"/"Mrs"/... aus der DB).
+SALUTATION_DE = {
+	"Mr": "Herr",
+	"Mrs": "Frau",
+	"Ms": "Frau",
+	"Madam": "Frau",
+	"Miss": "Frau",
+}
+
 
 @frappe.whitelist()
 def get_kunden():
@@ -62,6 +72,7 @@ def get_kunden():
 			filters={"name": ["in", contact_names]},
 			fields=[
 				"name",
+				"salutation",
 				"first_name",
 				"last_name",
 				"email_id",
@@ -125,6 +136,9 @@ def get_kunden():
 			ansprechpartner.append(
 				{
 					"name": full_name or contact.name,
+					"anrede": SALUTATION_DE.get(contact.salutation, contact.salutation or ""),
+					"vorname": contact.first_name or "",
+					"nachname": contact.last_name or "",
 					"email": contact.email_id or "",
 					"telefon": contact.phone or contact.mobile_no or "",
 				}

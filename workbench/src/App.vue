@@ -572,13 +572,12 @@ import { exportMaterialienJson, importMaterialienJson } from './utils/materialRe
 import { MASCHINEN } from './utils/maschinenStundensatz.js';
 import { getHistorie, speichereAngebot, ladeGespeicherteDateien, setzeStatus, STATUS, uebertrageLokaleAngeboteAufNas } from './utils/angebotsHistorie.js';
 import { getToken, setToken, holeVorschau, importiereAusgewaehlte, base64ZuDatei, pruefeVerbindung } from './utils/mailBridge.js';
-import { getNextAngebotsNummer } from './utils/counters.js';
 import { nasVerfuegbar, waehleNasOrdner, holeVerbundenenOrdner, nasStatus, bestaetigeBerechtigung } from './utils/nasStorage.js';
 
 const rfq = reactive({
-  customer_name: 'Bosch Rexroth',
+  customer_name: '',
   rfq_number: '',
-  email_source: 'sales@kunde.de',
+  email_source: '',
   date: '',
   lieferanten_nr: '',
   ansprechpartner_name: '',
@@ -750,11 +749,6 @@ watch(
   (len, vorher) => {
     if (len > 0 && (activePartIndex.value < 0 || activePartIndex.value >= len)) {
       activePartIndex.value = len - 1;
-    }
-    // Erstes Bauteil eines neuen, noch nummernlosen Angebots → automatisch eine
-    // fortlaufende Angebotsnummer vergeben (statt "Nr. vergeben" klicken zu müssen).
-    if ((vorher || 0) === 0 && len > 0 && !rfq.rfq_number) {
-      rfq.rfq_number = getNextAngebotsNummer();
     }
   },
 );

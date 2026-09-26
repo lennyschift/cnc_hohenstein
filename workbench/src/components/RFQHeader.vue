@@ -28,13 +28,6 @@
         >
           🔄
         </button>
-        <textarea
-          v-model="localRfq.customer_name"
-          rows="1"
-          class="bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 min-w-[200px] resize-y leading-tight"
-          placeholder="Kunde / Anschrift (mehrzeilig möglich)"
-          title="Mehrere Zeilen möglich (Firma / Straße / PLZ Ort) — Feld ist vertikal ziehbar"
-        ></textarea>
         <select
           v-if="ansprechpartnerListe.length || aktuellerKunde"
           v-model="localRfq.ansprechpartner_name"
@@ -45,30 +38,14 @@
           <option v-for="(a, i) in ansprechpartnerListe" :key="i" :value="a.name">{{ a.name }}</option>
           <option value="__new__">+ Neuer Ansprechpartner…</option>
         </select>
-        <div class="flex items-center gap-1">
-          <span class="text-[11px] text-slate-400">AN-Nr.</span>
-          <input
-            v-model="localRfq.rfq_number"
-            type="text"
-            class="bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 w-28"
-            placeholder="z. B. 260001"
-          />
-          <button
-            type="button"
-            class="rounded-lg border border-slate-700/80 bg-slate-800 px-2 py-1.5 text-[11px] text-slate-200 hover:border-sky-500 transition"
-            title="Nächste fortlaufende Nummer vergeben (Jahr + 4-stellig)"
-            @click="vergebeNummer"
-          >
-            Nr. vergeben
-          </button>
-        </div>
-        <div class="flex items-center gap-1">
+        <div v-if="localRfq.lieferanten_nr" class="flex items-center gap-1">
           <span class="text-[11px] text-slate-400">Lieferanten-Nr.</span>
           <input
-            v-model="localRfq.lieferanten_nr"
+            :value="localRfq.lieferanten_nr"
             type="text"
-            class="bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 w-28"
-            placeholder="063018/00"
+            readonly
+            title="Nur Anzeige - kommt aus ERPNext (Supplier Numbers beim Kunden)"
+            class="bg-slate-900/60 border border-slate-800 rounded-lg px-3 py-1.5 text-sm text-slate-300 w-28 cursor-default"
           />
         </div>
         <input
@@ -77,6 +54,23 @@
           class="bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 min-w-[160px]"
           placeholder="E-Mail Quelle (intern)"
         />
+      </div>
+
+      <!-- Feste Anzeige der Kunden-/Ansprechpartner-Daten aus ERPNext -->
+      <div class="flex flex-wrap items-start gap-3">
+        <div class="min-w-[220px] bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 whitespace-pre-line">
+          <span v-if="aktuellerKunde">{{ localRfq.customer_name }}</span>
+          <span v-else class="text-slate-500 italic">Bitte zuerst einen Kunden auswählen</span>
+        </div>
+        <div
+          v-if="ausgewaehlterAnsprechpartner"
+          class="min-w-[220px] bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5"
+        >
+          <span v-if="ausgewaehlterAnsprechpartner.anrede">{{ ausgewaehlterAnsprechpartner.anrede }}</span>
+          <span>{{ [ausgewaehlterAnsprechpartner.vorname, ausgewaehlterAnsprechpartner.nachname].filter(Boolean).join(' ') || ausgewaehlterAnsprechpartner.name }}</span>
+          <span v-if="ausgewaehlterAnsprechpartner.email">✉ {{ ausgewaehlterAnsprechpartner.email }}</span>
+          <span v-if="ausgewaehlterAnsprechpartner.telefon">☎ {{ ausgewaehlterAnsprechpartner.telefon }}</span>
+        </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-3 pt-1">
@@ -198,7 +192,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { getISOWeek, getMondayOfISOWeek } from '../utils/dateWeek.js';
-import { getNextAngebotsNummer } from '../utils/counters.js';
 
 const props = defineProps({
   rfq: {
@@ -219,13 +212,11 @@ const props = defineProps({
   },
 });
 
-function vergebeNummer() {
-  const jahr = localRfq.value.date ? new Date(localRfq.value.date).getFullYear() : new Date().getFullYear();
-  localRfq.value.rfq_number = getNextAngebotsNummer(jahr);
-}
-
 const aktuellerKunde = ref(null);
 const ansprechpartnerListe = computed(() => aktuellerKunde.value?.ansprechpartner || []);
+const ausgewaehlterAnsprechpartner = computed(() =>
+  ansprechpartnerListe.value.find((a) => a.name === localRfq.value.ansprechpartner_name) || null
+);
 
 function onKundeSelect(e) {
   const val = e.target.value;
@@ -236,7 +227,16 @@ function onKundeSelect(e) {
     e.target.value = '';
     return;
   }
-  if (val === '' || val == null) return;
+  if (val === '' || val == null) {
+    // Zurueck auf "Kunde wählen…" - Kunde und Ansprechpartner wieder
+    // komplett rausschmeissen, damit erneut ausgewaehlt werden muss.
+    aktuellerKunde.value = null;
+    localRfq.value.customer_name = '';
+    localRfq.value.ansprechpartner_name = '';
+    localRfq.value.lieferanten_nr = '';
+    localRfq.value.email_source = '';
+    return;
+  }
   const k = props.kunden[Number(val)];
   if (!k) return;
   aktuellerKunde.value = k;
