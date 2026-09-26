@@ -20,6 +20,14 @@
           <option v-for="(k, i) in kunden" :key="i" :value="i">{{ k.name }}</option>
           <option value="__new__">+ Neuer Kunde…</option>
         </select>
+        <button
+          type="button"
+          class="rounded-lg border border-slate-700/80 bg-slate-800 px-2 py-1.5 text-[11px] text-slate-200 hover:border-sky-500 transition"
+          title="Kundenliste aus ERPNext neu laden (z. B. nach Anlegen eines neuen Kunden)"
+          @click="$emit('kunden-changed')"
+        >
+          🔄
+        </button>
         <textarea
           v-model="localRfq.customer_name"
           rows="1"
@@ -69,27 +77,6 @@
           class="bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 min-w-[160px]"
           placeholder="E-Mail Quelle (intern)"
         />
-      </div>
-
-      <!-- Neuer Kunde anlegen -->
-      <div v-if="showNeuerKunde" class="flex flex-wrap items-center gap-2 pt-1 bg-slate-950/60 rounded-lg p-2">
-        <span class="text-[11px] text-emerald-300 font-medium">Neuer Kunde:</span>
-        <input v-model="neuerKunde.name" type="text" placeholder="Firma" class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-40" />
-        <textarea v-model="neuerKunde.adresse" placeholder="Anschrift (mehrzeilig)" rows="1" class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-56 resize-none"></textarea>
-        <input v-model="neuerKunde.email" type="text" placeholder="E-Mail" class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-40" />
-        <input v-model="neuerKunde.lieferanten_nr" type="text" placeholder="Lieferanten-Nr." class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-28" />
-        <button type="button" class="rounded bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 text-[11px] font-medium transition" @click="speichereNeuenKunden">Speichern</button>
-        <button type="button" class="rounded border border-slate-600 text-slate-300 px-2 py-1 text-[11px] hover:border-slate-400 transition" @click="showNeuerKunde = false">Abbrechen</button>
-      </div>
-
-      <!-- Neuer Ansprechpartner anlegen -->
-      <div v-if="showNeuerKontakt" class="flex flex-wrap items-center gap-2 pt-1 bg-slate-950/60 rounded-lg p-2">
-        <span class="text-[11px] text-emerald-300 font-medium">Neuer Ansprechpartner{{ aktuellerKunde ? ' für ' + aktuellerKunde.name : '' }}:</span>
-        <input v-model="neuerKontakt.name" type="text" placeholder="Name" class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-40" />
-        <input v-model="neuerKontakt.email" type="text" placeholder="E-Mail" class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-40" />
-        <input v-model="neuerKontakt.telefon" type="text" placeholder="Telefon" class="bg-slate-900 border border-slate-700/80 rounded-lg px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 w-32" />
-        <button type="button" class="rounded bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 text-[11px] font-medium transition" @click="speichereNeuenKontakt">Speichern</button>
-        <button type="button" class="rounded border border-slate-600 text-slate-300 px-2 py-1 text-[11px] hover:border-slate-400 transition" @click="showNeuerKontakt = false">Abbrechen</button>
       </div>
 
       <div class="flex flex-wrap items-center gap-3 pt-1">
@@ -212,7 +199,6 @@
 import { computed, ref, watch } from 'vue';
 import { getISOWeek, getMondayOfISOWeek } from '../utils/dateWeek.js';
 import { getNextAngebotsNummer } from '../utils/counters.js';
-import { addCustomKunde, addCustomKontakt } from '../utils/kundenStore.js';
 
 const props = defineProps({
   rfq: {
@@ -244,7 +230,9 @@ const ansprechpartnerListe = computed(() => aktuellerKunde.value?.ansprechpartne
 function onKundeSelect(e) {
   const val = e.target.value;
   if (val === '__new__') {
-    showNeuerKunde.value = true;
+    // Kunde wird direkt in ERPNext angelegt (eigenes Formular dort, alle
+    // Felder korrekt) - Workbench liest ihn danach per 🔄 einfach mit.
+    window.open('/app/customer/new', '_blank');
     e.target.value = '';
     return;
   }
@@ -261,39 +249,12 @@ function onKundeSelect(e) {
 function onAnsprechpartnerSelect() {
   if (localRfq.value.ansprechpartner_name === '__new__') {
     localRfq.value.ansprechpartner_name = '';
-    showNeuerKontakt.value = true;
+    // Kontakt/Adresse wird direkt auf der bestehenden Kundenseite in
+    // ERPNext ergaenzt - Workbench liest ihn danach per 🔄 einfach mit.
+    if (aktuellerKunde.value?.erpnext_name) {
+      window.open(`/app/customer/${encodeURIComponent(aktuellerKunde.value.erpnext_name)}`, '_blank');
+    }
   }
-}
-
-// --- Neuer Kunde ---
-const showNeuerKunde = ref(false);
-const neuerKunde = ref({ name: '', adresse: '', email: '', lieferanten_nr: '' });
-function speichereNeuenKunden() {
-  if (!neuerKunde.value.name) return;
-  addCustomKunde({ ...neuerKunde.value });
-  localRfq.value.customer_name = neuerKunde.value.adresse || neuerKunde.value.name;
-  if (neuerKunde.value.lieferanten_nr) localRfq.value.lieferanten_nr = neuerKunde.value.lieferanten_nr;
-  aktuellerKunde.value = { ...neuerKunde.value, ansprechpartner: [] };
-  showNeuerKunde.value = false;
-  neuerKunde.value = { name: '', adresse: '', email: '', lieferanten_nr: '' };
-  emits('kunden-changed');
-}
-
-// --- Neuer Ansprechpartner ---
-const showNeuerKontakt = ref(false);
-const neuerKontakt = ref({ name: '', email: '', telefon: '' });
-function speichereNeuenKontakt() {
-  if (!neuerKontakt.value.name || !aktuellerKunde.value) return;
-  const neu = { ...neuerKontakt.value };
-  addCustomKontakt(aktuellerKunde.value.name, neu);
-  aktuellerKunde.value = {
-    ...aktuellerKunde.value,
-    ansprechpartner: [...(aktuellerKunde.value.ansprechpartner || []), neu],
-  };
-  localRfq.value.ansprechpartner_name = neu.name;
-  showNeuerKontakt.value = false;
-  neuerKontakt.value = { name: '', email: '', telefon: '' };
-  emits('kunden-changed');
 }
 
 const emits = defineEmits(['update:rfq', 'save', 'create-erpnext-quotation', 'preview-pdf', 'send-email', 'update:bildImPdf', 'kunden-changed']);

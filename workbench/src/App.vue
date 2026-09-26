@@ -33,18 +33,6 @@
         <button
           type="button"
           class="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-[11px] text-slate-300 hover:border-sky-500 transition"
-          title="Eigene Kunden + Ansprechpartner als JSON-Datei sichern"
-          @click="exportKundenJson"
-        >
-          ⬇ Kunden
-        </button>
-        <label class="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-[11px] text-slate-300 hover:border-sky-500 transition cursor-pointer">
-          ⬆ Kunden
-          <input type="file" accept="application/json" class="hidden" @change="onImportKunden" />
-        </label>
-        <button
-          type="button"
-          class="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-[11px] text-slate-300 hover:border-sky-500 transition"
           title="Eigene Materialien + Oberflächen als JSON-Datei sichern"
           @click="exportMaterialienJson"
         >
@@ -580,7 +568,6 @@ import { getPdfThumbnail } from './utils/pdfThumbnail.js';
 import { planeAnalyse, setzeAnalyseCallback, setzeMeshCallback } from './utils/analyseQueue.js';
 import { renderMeshThumbnail } from './utils/stepThumbnail.js';
 import { openQuotationPrint } from './utils/quotationPdf.js';
-import { mergeKunden, addCustomKunde, addCustomKontakt, exportKundenJson, importKundenJson } from './utils/kundenStore.js';
 import { exportMaterialienJson, importMaterialienJson } from './utils/materialRecognition.js';
 import { MASCHINEN } from './utils/maschinenStundensatz.js';
 import { getHistorie, speichereAngebot, ladeGespeicherteDateien, setzeStatus, STATUS, uebertrageLokaleAngeboteAufNas } from './utils/angebotsHistorie.js';
@@ -692,23 +679,18 @@ function wendeGlobaleWerteAufAlleTeileAn() {
   });
 }
 
-// Kundenliste: Startbestand aus public/kunden.json + eigene Kunden aus localStorage
-// (localStorage, weil der Browser die kunden.json selbst nicht zurückschreiben kann)
+// Kundenliste: live aus ERPNext (Customer/Address/Contact), siehe
+// cnc_hohenstein/cnc_hohenstein/api.py get_kunden(). Kein lokaler Fallback
+// mehr noetig - ERPNext ist jetzt die alleinige Quelle.
 const kunden = ref([]);
 function reloadKunden() {
-  fetch(`${import.meta.env.BASE_URL || '/'}kunden.json`)
-    .then((r) => (r.ok ? r.json() : []))
-    .then((data) => { kunden.value = mergeKunden(Array.isArray(data) ? data : []); })
-    .catch(() => { kunden.value = mergeKunden([]); });
+  fetch('/api/method/cnc_hohenstein.api.get_kunden')
+    .then((r) => (r.ok ? r.json() : { message: [] }))
+    .then((data) => { kunden.value = Array.isArray(data.message) ? data.message : []; })
+    .catch(() => { kunden.value = []; });
 }
 reloadKunden();
 
-function onImportKunden(event) {
-  const file = event.target.files?.[0];
-  event.target.value = '';
-  if (!file) return;
-  importKundenJson(file).then(reloadKunden).catch((e) => alert('Import fehlgeschlagen: ' + e.message));
-}
 function onImportMaterialien(event) {
   const file = event.target.files?.[0];
   event.target.value = '';
